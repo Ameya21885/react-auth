@@ -1,10 +1,35 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Root, Home, About, Contact } from "../pages";
+import AuthLayout from "../layout/AuthLayout";
+import DashboardLayout from "../layout/DashboardLayout";
+import { ForgotPassword, Login, Registration } from "../../features/auth/pages";
+import { About, Contact, Home } from "../../features/dashboard/pages";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root />,
+    element: <AuthLayout />,
+    children: [
+      {
+        element: <Login />,
+        index: true,
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPassword />,
+      },
+      {
+        path: "registration",
+        element: <Registration />,
+      },
+      {
+        path: "*",
+        element: <p>404 Error- Nothing here...</p>,
+      },
+    ],
+  },
+    {
+    path: "/dashboard",
+    element: <DashboardLayout />,
     children: [
       {
         element: <Home />,
