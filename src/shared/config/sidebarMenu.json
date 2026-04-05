@@ -1,0 +1,56 @@
+{
+  "sections": [
+    {
+      "id": "main",
+      "items": [
+        {
+          "id": 1,
+          "name": "Dashboard",
+          "route": "/dashboard",
+          "icon": "inbox",
+          "component": "Dashboard"
+        },
+        {
+          "id": 2,
+          "name": "About",
+          "route": "/dashboard/about-us",
+          "icon": "star",
+          "component": "About"
+        },
+        {
+          "id": 3,
+          "name": "Contact",
+          "route": "/dashboard/contact-us",
+          "icon": "draft",
+          "component": "Contact"
+        }
+      ]
+    },
+    {
+      "id": "secondary",
+      "items": [
+        {
+          "id": 4,
+          "name": "All Mail",
+          "route": "/all-mail",
+          "icon": "mail",
+          "component": "AllMail"
+        },
+        {
+          "id": 5,
+          "name": "Trash",
+          "route": "/trash",
+          "icon": "trash",
+          "component": "Trash"
+        },
+        {
+          "id": 6,
+          "name": "Spam",
+          "route": "/spam",
+          "icon": "spam",
+          "component": "Spam"
+        }
+      ]
+    }
+  ]
+}
