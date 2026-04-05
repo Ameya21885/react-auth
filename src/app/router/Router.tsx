@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import AuthLayout from "../layout/AuthLayout";
 import DashboardLayout from "../layout/DashboardLayout";
-import { ForgotPassword, Login, Registration } from "../../features/auth/pages";
+import { ForgotPassword, Login, OtpVerification, Registration } from "../../features/auth/pages";
 import { About, Contact, Home } from "../../features/dashboard/pages";
 
 const router = createBrowserRouter([
@@ -16,6 +16,10 @@ const router = createBrowserRouter([
       {
         path: "forgot-password",
         element: <ForgotPassword />,
+      },
+      {
+        path: "otp-verification",
+        element: <OtpVerification />,
       },
       {
         path: "registration",
