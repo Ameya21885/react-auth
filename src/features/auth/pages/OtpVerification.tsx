@@ -97,7 +97,7 @@ const OtpVerification = () => {
 
           <Typo
             variant="body2"
-            text="New to ipShopy? Create account"
+            text="New to React-Auth? Create account"
             sx={{
               textAlign: "center",
               ...textStyle,

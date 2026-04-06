@@ -1,8 +1,10 @@
-import { Box, Stack } from '@mui/material'
+import { Box, Stack } from "@mui/material";
+import { useFormik } from "formik";
 import forgot_password from "../../../assets/forgot-password.jpg";
-import Typo from '../../../shared/components/Typo';
-import CustomTextField from '../../../shared/components/CustomTextField';
-import CustomButton from '../../../shared/components/CustomButton';
+import Typo from "../../../shared/components/Typo";
+import CustomTextField from "../../../shared/components/CustomTextField";
+import CustomButton from "../../../shared/components/CustomButton";
+import { forgotPasswordValidation } from "../validations/loginValidation";
 
 const textStyle = {
   fontSize: {
@@ -14,6 +16,16 @@ const textStyle = {
 };
 
 const ForgotPassword = () => {
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+    },
+    validationSchema: forgotPasswordValidation,
+    onSubmit: (values) => {
+      console.log("Forgot Password values:", values);
+    },
+  });
+
   return (
     <Box
       sx={{
@@ -52,7 +64,6 @@ const ForgotPassword = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          // px: { xs: 2, sm: 3, md: 4, lg: 6 },
         }}
       >
         <Stack
@@ -81,23 +92,32 @@ const ForgotPassword = () => {
             }}
           />
 
-          <Stack spacing={2}>
-            <CustomTextField
-              label="Enter Email id"
-              variant="outlined"
-              fullWidth
-            />
+          <form onSubmit={formik.handleSubmit}>
+            <Stack spacing={2}>
+              <CustomTextField
+                name="email"
+                label="Enter Email id"
+                variant="outlined"
+                fullWidth
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email ? formik.errors.email : ""}
+              />
 
-            <CustomButton
-              text="Continue"
-              variant="contained"
-              fullWidth
-            />
-          </Stack>
+              <CustomButton
+                text="Continue"
+                variant="contained"
+                fullWidth
+                type="submit"
+              />
+            </Stack>
+          </form>
 
           <Typo
             variant="body2"
-            text="New to ipShopy? Create account"
+            text="New to React-Auth? Create account"
             sx={{
               textAlign: "center",
               ...textStyle,
@@ -106,7 +126,7 @@ const ForgotPassword = () => {
         </Stack>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default ForgotPassword
+export default ForgotPassword;

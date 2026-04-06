@@ -1,8 +1,8 @@
 import type { TypographyProps, ButtonProps, TextFieldProps   } from "@mui/material";
 
 export interface TypoProps extends TypographyProps {
-  text: string;
-  variant?: TypographyProps["variant"];
+  text?: string;
+  children?: React.ReactNode;
 }
 
 export interface AppButtonProps extends ButtonProps {

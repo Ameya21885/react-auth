@@ -4,6 +4,7 @@ import login from "../../../assets/login.jpg";
 import Typo from "../../../shared/components/Typo";
 import LoginWithEmailWhatsapp from "./LoginWithEmailWhatsapp";
 import LoginWithEmailPassword from "./LoginWithEmailPassword";
+import { useNavigate } from "react-router-dom";
 
 const textStyle = {
   fontSize: {
@@ -15,6 +16,7 @@ const textStyle = {
 };
 
 const Login = () => {
+  const navigate = useNavigate();
   const [loginType, setLoginType] = useState<"otp" | "password">("otp");
 
   return (
@@ -98,12 +100,23 @@ const Login = () => {
 
           <Typo
             variant="body2"
-            text="New to ipShopy? Create account"
             sx={{
               textAlign: "center",
               ...textStyle,
             }}
-          />
+          >
+            New to React-Auth?
+            <span
+              style={{
+                color: "#1976d2",
+                cursor: "pointer",
+                fontWeight: 500,
+              }}
+              onClick={() => navigate("/create-account")}
+            >
+              Create account
+            </span>
+          </Typo>
         </Stack>
       </Box>
     </Box>
