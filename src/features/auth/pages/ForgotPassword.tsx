@@ -1,10 +1,11 @@
-import { Box, Stack } from "@mui/material";
+import { Box, Grid, Stack } from "@mui/material";
 import { useFormik } from "formik";
 import forgot_password from "../../../assets/forgot-password.jpg";
 import Typo from "../../../shared/components/Typo";
 import CustomTextField from "../../../shared/components/CustomTextField";
 import CustomButton from "../../../shared/components/CustomButton";
 import { forgotPasswordValidation } from "../validations/loginValidation";
+import { useNavigate } from "react-router-dom";
 
 const textStyle = {
   fontSize: {
@@ -16,13 +17,18 @@ const textStyle = {
 };
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       email: "",
+      otp: "",
+      password: "",
+      confirmPassword: "",
     },
     validationSchema: forgotPasswordValidation,
     onSubmit: (values) => {
       console.log("Forgot Password values:", values);
+      navigate("/")
     },
   });
 
@@ -94,35 +100,101 @@ const ForgotPassword = () => {
 
           <form onSubmit={formik.handleSubmit}>
             <Stack spacing={2}>
-              <CustomTextField
-                name="email"
-                label="Enter Email id"
-                variant="outlined"
-                fullWidth
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email ? formik.errors.email : ""}
-              />
+              <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                <Grid size={12}>
+                  <CustomTextField
+                    name="email"
+                    label="Enter Email id"
+                    variant="outlined"
+                    fullWidth
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.email && Boolean(formik.errors.email)}
+                    helperText={formik.touched.email ? formik.errors.email : ""}
+                  />
+                </Grid>
+                <Grid size={8}>
+                  <CustomTextField
+                    name="otp"
+                    label="Enter Otp"
+                    type="text"
+                    variant="outlined"
+                    fullWidth
+                    value={formik.values.otp}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.otp && Boolean(formik.errors.otp)}
+                    helperText={formik.touched.otp ? formik.errors.otp : ""}
+                  />
+                </Grid>
+                <Grid size={4}>
+                  <CustomButton
+                    text="verify"
+                    variant="contained"
+                    fullWidth
+                  />
+                </Grid>
+                <Grid size={12}>
+                  <CustomTextField
+                    name="password"
+                    label="Enter Password"
+                    type="password"
+                    variant="outlined"
+                    fullWidth
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.password && Boolean(formik.errors.password)}
+                    helperText={formik.touched.password ? formik.errors.password : ""}
+                  />
 
-              <CustomButton
-                text="Continue"
-                variant="contained"
-                fullWidth
-                type="submit"
-              />
+                </Grid>
+                <Grid size={12}>
+                  <CustomTextField
+                    name="confirmPassword"
+                    label="Enter Confirm Password"
+                    type="password"
+                    variant="outlined"
+                    fullWidth
+                    value={formik.values.confirmPassword}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
+                    helperText={formik.touched.confirmPassword ? formik.errors.confirmPassword : ""}
+                  />
+                </Grid>
+                <Grid size={12}>
+                  <CustomButton
+                    text="Continue"
+                    variant="contained"
+                    fullWidth
+                    type="submit"
+                  />
+                </Grid>
+              </Grid>
             </Stack>
           </form>
 
           <Typo
             variant="body2"
-            text="New to React-Auth? Create account"
             sx={{
               textAlign: "center",
               ...textStyle,
             }}
-          />
+          >
+            New to React-Auth?
+            <span
+              style={{
+                color: "#1976d2",
+                cursor: "pointer",
+                fontWeight: 500,
+              }}
+              onClick={() => navigate("/create-account")}
+            >
+              Create account
+            </span>
+          </Typo>
         </Stack>
       </Box>
     </Box>

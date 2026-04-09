@@ -16,17 +16,46 @@ interface StepItem {
 
 interface FormStepperProps {
   steps: StepItem[];
+  formik: any;
+  activeStep: number;
+  setActiveStep: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const FormStepper = ({ steps }: FormStepperProps) => {
-  const [activeStep, setActiveStep] = useState(0);
+const FormStepper = ({ steps, formik, activeStep, setActiveStep }: FormStepperProps) => {
   const [skipped, setSkipped] = useState(new Set<number>());
 
   const isStepOptional = (step: number) => steps[step]?.optional ?? false;
-
   const isStepSkipped = (step: number) => skipped.has(step);
 
-  const handleNext = () => {
+  const stepFields: Record<number, string[]> = {
+    0: ["firstName", "lastName", "userName"],
+    1: ["email", "emailOtp", "phoneNumber", "phoneOtp"],
+    2: ["password", "confirmPassword"],
+  };
+
+  const handleNext = async () => {
+    const currentFields = stepFields[activeStep] || [];
+
+    const errors = await formik.validateForm();
+
+    const newTouched: Record<string, boolean> = {};
+    currentFields.forEach((field) => {
+      newTouched[field] = true;
+    });
+
+    formik.setTouched(
+      {
+        ...formik.touched,
+        ...newTouched,
+      },
+      false
+    );
+
+    if (Object.keys(errors).length > 0) {
+      formik.setErrors(errors);
+      return;
+    }
+
     let newSkipped = skipped;
 
     if (isStepSkipped(activeStep)) {
@@ -34,8 +63,13 @@ const FormStepper = ({ steps }: FormStepperProps) => {
       newSkipped.delete(activeStep);
     }
 
-    setActiveStep((prev) => prev + 1);
-    setSkipped(newSkipped);
+    if (activeStep === steps.length - 1) {
+      formik.handleSubmit();
+      setActiveStep((prev) => prev + 1);
+    } else {
+      setActiveStep((prev) => prev + 1);
+      setSkipped(newSkipped);
+    }
   };
 
   const handleBack = () => {
@@ -53,11 +87,6 @@ const FormStepper = ({ steps }: FormStepperProps) => {
       newSkipped.add(activeStep);
       return newSkipped;
     });
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-    setSkipped(new Set());
   };
 
   return (
@@ -90,10 +119,6 @@ const FormStepper = ({ steps }: FormStepperProps) => {
           <Typography sx={{ mt: 3, mb: 2 }}>
             All steps completed - you're finished
           </Typography>
-
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button onClick={handleReset}>Reset</Button>
-          </Box>
         </>
       ) : (
         <>
@@ -113,12 +138,6 @@ const FormStepper = ({ steps }: FormStepperProps) => {
             </Button>
 
             <Box sx={{ display: "flex", gap: 1 }}>
-              {isStepOptional(activeStep) && (
-                <Button color="inherit" onClick={handleSkip}>
-                  Skip
-                </Button>
-              )}
-
               <Button variant="contained" onClick={handleNext}>
                 {activeStep === steps.length - 1 ? "Finish" : "Next"}
               </Button>

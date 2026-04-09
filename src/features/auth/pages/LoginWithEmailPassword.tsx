@@ -36,6 +36,7 @@ const LoginWithEmailPassword = ({
         validationSchema: loginWithEmailPasswordValidation,
         onSubmit: (values) => {
             console.log("Login values:", values);
+            navigate("/dashboard");
         },
     });
 

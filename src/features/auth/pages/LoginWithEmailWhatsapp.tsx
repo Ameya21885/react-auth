@@ -6,6 +6,7 @@ import Typo from "../../../shared/components/Typo";
 import CustomButton from "../../../shared/components/CustomButton";
 
 import { loginWithEmailWhatsappValidation } from "../validations/loginValidation";
+import { useNavigate } from "react-router-dom";
 
 interface LoginWithEmailWhatsappProps {
   setLoginType: React.Dispatch<React.SetStateAction<"otp" | "password">>;
@@ -24,6 +25,7 @@ const LoginWithEmailWhatsapp = ({
   textStyle,
 }: LoginWithEmailWhatsappProps) => {
 
+  const navigate= useNavigate();
   const formik = useFormik({
     initialValues: {
       emailOrWhatsapp: "",
@@ -31,6 +33,7 @@ const LoginWithEmailWhatsapp = ({
     validationSchema: loginWithEmailWhatsappValidation,
     onSubmit: (values) => {
       console.log("Submitted:", values);
+      navigate('/otp-verification')
     },
   });
 

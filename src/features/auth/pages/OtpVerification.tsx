@@ -1,8 +1,12 @@
-import { Box, Stack } from '@mui/material'
-import Typo from '../../../shared/components/Typo'
-import CustomTextField from '../../../shared/components/CustomTextField'
-import CustomButton from '../../../shared/components/CustomButton'
-import Otp_verification from '../../../assets/otp-verification.jpg'
+import { Box, Stack } from "@mui/material";
+import { useFormik } from "formik";
+import { useNavigate } from "react-router-dom";
+
+import Typo from "../../../shared/components/Typo";
+import CustomTextField from "../../../shared/components/CustomTextField";
+import CustomButton from "../../../shared/components/CustomButton";
+import Otp_verification from "../../../assets/otp-verification.jpg";
+import { otpVerificationValidation } from "../validations/loginValidation"; // adjust path if needed
 
 const textStyle = {
   fontSize: {
@@ -14,8 +18,21 @@ const textStyle = {
 };
 
 const OtpVerification = () => {
+  const navigate = useNavigate();
+
+  const formik = useFormik({
+    initialValues: {
+      otp: "",
+    },
+    validationSchema: otpVerificationValidation,
+    onSubmit: (values) => {
+      console.log("OTP Submitted:", values);
+      navigate('/dashboard');
+    },
+  });
+
   return (
-     <Box
+    <Box
       sx={{
         width: "100%",
         minHeight: "100vh",
@@ -52,7 +69,6 @@ const OtpVerification = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          // px: { xs: 2, sm: 3, md: 4, lg: 6 },
         }}
       >
         <Stack
@@ -62,6 +78,8 @@ const OtpVerification = () => {
             maxWidth: { xs: 350, sm: 400, md: 420, lg: 450 },
             mx: "auto",
           }}
+          component="form"
+          onSubmit={formik.handleSubmit}
         >
           <Typo
             variant="h5"
@@ -84,29 +102,47 @@ const OtpVerification = () => {
           <Stack spacing={2}>
             <CustomTextField
               label="Enter OTP"
+              name="otp"
               variant="outlined"
               fullWidth
+              value={formik.values.otp}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.otp && Boolean(formik.errors.otp)}
+              helperText={formik.touched.otp && formik.errors.otp}
             />
 
             <CustomButton
               text="Continue"
               variant="contained"
               fullWidth
+              type="submit"
             />
           </Stack>
 
           <Typo
             variant="body2"
-            text="New to React-Auth? Create account"
             sx={{
               textAlign: "center",
               ...textStyle,
             }}
-          />
+          >
+            New to React-Auth?{" "}
+            <span
+              style={{
+                color: "#1976d2",
+                cursor: "pointer",
+                fontWeight: 500,
+              }}
+              onClick={() => navigate("/create-account")}
+            >
+              Create account
+            </span>
+          </Typo>
         </Stack>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default OtpVerification
+export default OtpVerification;

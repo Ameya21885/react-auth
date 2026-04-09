@@ -1,40 +1,55 @@
-import { Box, Stack } from '@mui/material'
-import Typo from '../../../shared/components/Typo'
-import CustomTextField from '../../../shared/components/CustomTextField'
-import CustomButton from '../../../shared/components/CustomButton'
-import create_account from '../../../assets/create-account.jpg'
-import FormStepper from '../../../shared/components/FormStepper'
-import Step1 from './Step1'
-import Step2 from './Step2'
-import Step3 from './Step3'
-
-const textStyle = {
-  fontSize: {
-    xs: "12px",
-    sm: "13px",
-    md: "14px",
-    lg: "14px",
-  },
-};
+import { Box, Stack } from "@mui/material";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import Typo from "../../../shared/components/Typo";
+import create_account from "../../../assets/create-account.jpg";
+import FormStepper from "../components/FormStepper";
+import Step1 from "./Step1";
+import Step2 from "./Step2";
+import Step3 from "./Step3";
+import { createAccountValidationSchemas } from "../validations/loginValidation";
 
 const CreateAccount = () => {
+  const [activeStep, setActiveStep] = useState(0);
+  const navigate = useNavigate();
+
+  const formik = useFormik({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      userName: "",
+      email: "",
+      emailOtp: "",
+      phoneNumber: "",
+      phoneOtp: "",
+      password: "",
+      confirmPassword: "",
+    },
+    onSubmit: (values) => {
+      console.log("Create Account Values:", values);
+      navigate("/login");
+    },
+    validationSchema: createAccountValidationSchemas[activeStep],
+    validateOnBlur: true,
+    validateOnChange: true,
+  });
 
   const steps = [
     {
       label: "Basic Details",
-      component: <Step1 />,
+      component: <Step1 formik={formik} />,
     },
     {
       label: "Business Details",
-      component: <Step2 />,
+      component: <Step2 formik={formik} />,
       optional: true,
     },
     {
       label: "Verification",
-      component: <Step3 />,
+      component: <Step3 formik={formik} />,
     },
   ];
-
 
   return (
     <Box
@@ -74,7 +89,6 @@ const CreateAccount = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          // px: { xs: 2, sm: 3, md: 4, lg: 6 },
         }}
       >
         <Stack
@@ -104,13 +118,17 @@ const CreateAccount = () => {
           />
 
           <Stack spacing={2}>
-            <FormStepper steps={steps} />
+            <FormStepper
+              steps={steps}
+              formik={formik}
+              activeStep={activeStep}
+              setActiveStep={setActiveStep}
+            />
           </Stack>
-
         </Stack>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default CreateAccount
+export default CreateAccount;
