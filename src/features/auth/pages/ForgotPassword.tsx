@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Box, Grid, Stack } from "@mui/material";
 import { useFormik } from "formik";
 import forgot_password from "../../../assets/forgot-password.jpg";

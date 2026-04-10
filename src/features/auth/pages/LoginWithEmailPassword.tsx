@@ -28,7 +28,7 @@ const LoginWithEmailPassword = ({
 }: LoginWithEmailPasswordProps) => {
 
     const navigate = useNavigate();
-    const [login, { isLoading }] = useLoginMutation();
+    const [login] = useLoginMutation();
 
     const formik = useFormik({
         initialValues: {

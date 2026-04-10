@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Grid, Stack } from "@mui/material";
 import CustomTextField from "../../../shared/components/CustomTextField";
 import CustomButton from "../../../shared/components/CustomButton";
@@ -178,4 +178,4 @@ const Step2 = ({ formik }: any) => {
   );
 };
 
-export default Step2;
+export default Step2;

@@ -14,7 +14,7 @@ import { useRegisterMutation } from "../../../app/services/authApi";
 const CreateAccount = () => {
   const [activeStep, setActiveStep] = useState(0);
   const navigate = useNavigate();
-  const [register, { isLoading }] = useRegisterMutation();
+  const [register] = useRegisterMutation();
 
   const formik = useFormik({
     initialValues: {

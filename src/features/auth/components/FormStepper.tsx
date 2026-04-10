@@ -24,7 +24,6 @@ interface FormStepperProps {
 const FormStepper = ({ steps, formik, activeStep, setActiveStep }: FormStepperProps) => {
   const [skipped, setSkipped] = useState(new Set<number>());
 
-  const isStepOptional = (step: number) => steps[step]?.optional ?? false;
   const isStepSkipped = (step: number) => skipped.has(step);
 
   const stepFields: Record<number, string[]> = {
@@ -76,18 +75,6 @@ const FormStepper = ({ steps, formik, activeStep, setActiveStep }: FormStepperPr
     setActiveStep((prev) => prev - 1);
   };
 
-  const handleSkip = () => {
-    if (!isStepOptional(activeStep)) {
-      throw new Error("You can't skip a step that isn't optional.");
-    }
-
-    setActiveStep((prev) => prev + 1);
-    setSkipped((prevSkipped) => {
-      const newSkipped = new Set(prevSkipped);
-      newSkipped.add(activeStep);
-      return newSkipped;
-    });
-  };
 
   return (
     <Box sx={{ width: "100%" }}>
