@@ -8,6 +8,7 @@ import CustomButton from "../../../shared/components/CustomButton";
 
 import { loginWithEmailPasswordValidation } from "../validations/loginValidation";
 import { useNavigate } from "react-router-dom";
+import { useLoginMutation } from "../../../app/services/authApi";
 
 interface LoginWithEmailPasswordProps {
     setLoginType: React.Dispatch<React.SetStateAction<"otp" | "password">>;
@@ -27,6 +28,7 @@ const LoginWithEmailPassword = ({
 }: LoginWithEmailPasswordProps) => {
 
     const navigate = useNavigate();
+    const [login, { isLoading }] = useLoginMutation();
 
     const formik = useFormik({
         initialValues: {
@@ -34,9 +36,14 @@ const LoginWithEmailPassword = ({
             password: "",
         },
         validationSchema: loginWithEmailPasswordValidation,
-        onSubmit: (values) => {
-            console.log("Login values:", values);
-            navigate("/dashboard");
+        onSubmit: async (values) => {
+            try {
+                const response = await login(values).unwrap();
+                console.log("Login success:", response);
+                navigate("/dashboard");
+            } catch (err) {
+                console.error("Login mapping error:", err);
+            }
         },
     });
 

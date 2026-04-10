@@ -1,12 +1,84 @@
+import React, { useState } from "react";
 import { Grid, Stack } from "@mui/material";
 import CustomTextField from "../../../shared/components/CustomTextField";
 import CustomButton from "../../../shared/components/CustomButton";
+import { useSendOtpMutation, useVerifyOtpMutation } from "../../../app/services/authApi";
 
 const Step2 = ({ formik }: any) => {
+  const [sendOtp, { isLoading: isSendingOtp }] = useSendOtpMutation();
+  const [verifyOtp, { isLoading: isVerifyingOtp }] = useVerifyOtpMutation();
+
+  const [emailOtpSent, setEmailOtpSent] = useState(false);
+  const [emailOtpVerified, setEmailOtpVerified] = useState(false);
+  const [phoneOtpSent, setPhoneOtpSent] = useState(false);
+  const [phoneOtpVerified, setPhoneOtpVerified] = useState(false);
+
+  const handleSendEmailOtp = async () => {
+    if (formik.values.email && !formik.errors.email) {
+      try {
+        await sendOtp({ identifier: formik.values.email }).unwrap();
+        setEmailOtpSent(true);
+        alert("OTP sent to your email.");
+      } catch (err) {
+        console.error("Send Email OTP error:", err);
+      }
+    } else {
+      formik.setFieldTouched("email", true);
+    }
+  };
+
+  const handleVerifyEmailOtp = async () => {
+    if (formik.values.emailOtp && !formik.errors.emailOtp) {
+      try {
+        await verifyOtp({
+          identifier: formik.values.email,
+          otp: formik.values.emailOtp,
+        }).unwrap();
+        setEmailOtpVerified(true);
+        alert("Email verified successfully.");
+      } catch (err) {
+        console.error("Verify Email OTP error:", err);
+      }
+    } else {
+      formik.setFieldTouched("emailOtp", true);
+    }
+  };
+
+  const handleSendPhoneOtp = async () => {
+    if (formik.values.phoneNumber && !formik.errors.phoneNumber) {
+      try {
+        await sendOtp({ identifier: formik.values.phoneNumber }).unwrap();
+        setPhoneOtpSent(true);
+        alert("OTP sent to your phone.");
+      } catch (err) {
+        console.error("Send Phone OTP error:", err);
+      }
+    } else {
+      formik.setFieldTouched("phoneNumber", true);
+    }
+  };
+
+  const handleVerifyPhoneOtp = async () => {
+    if (formik.values.phoneOtp && !formik.errors.phoneOtp) {
+      try {
+        await verifyOtp({
+          identifier: formik.values.phoneNumber,
+          otp: formik.values.phoneOtp,
+        }).unwrap();
+        setPhoneOtpVerified(true);
+        alert("Phone verified successfully.");
+      } catch (err) {
+        console.error("Verify Phone OTP error:", err);
+      }
+    } else {
+      formik.setFieldTouched("phoneOtp", true);
+    }
+  };
+
   return (
     <Stack spacing={2}>
       <Grid container spacing={2}>
-        <Grid size={{ xs: 12 }}>
+        <Grid size={8}>
           <CustomTextField
             label="Enter Email"
             name="email"
@@ -19,6 +91,15 @@ const Step2 = ({ formik }: any) => {
             helperText={formik.touched.email && formik.errors.email}
           />
         </Grid>
+        <Grid size={4}>
+          <CustomButton
+            text={isSendingOtp ? "Sending..." : "Send OTP"}
+            variant="outlined"
+            fullWidth
+            onClick={handleSendEmailOtp}
+            disabled={isSendingOtp || emailOtpSent}
+          />
+        </Grid>
 
         <Grid size={8}>
           <CustomTextField
@@ -26,6 +107,7 @@ const Step2 = ({ formik }: any) => {
             name="emailOtp"
             variant="outlined"
             fullWidth
+            disabled={!emailOtpSent}
             value={formik.values.emailOtp}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -35,10 +117,16 @@ const Step2 = ({ formik }: any) => {
         </Grid>
 
         <Grid size={4}>
-          <CustomButton text="Verify" variant="contained" fullWidth />
+          <CustomButton
+            text={isVerifyingOtp ? "Verifying..." : "Verify"}
+            variant="contained"
+            fullWidth
+            onClick={handleVerifyEmailOtp}
+            disabled={isVerifyingOtp || emailOtpVerified || !emailOtpSent}
+          />
         </Grid>
 
-        <Grid size={{ xs: 12 }}>
+        <Grid size={8}>
           <CustomTextField
             label="Phone Number"
             name="phoneNumber"
@@ -51,6 +139,15 @@ const Step2 = ({ formik }: any) => {
             helperText={formik.touched.phoneNumber && formik.errors.phoneNumber}
           />
         </Grid>
+        <Grid size={4}>
+          <CustomButton
+            text={isSendingOtp ? "Sending..." : "Send OTP"}
+            variant="outlined"
+            fullWidth
+            onClick={handleSendPhoneOtp}
+            disabled={isSendingOtp || phoneOtpSent}
+          />
+        </Grid>
 
         <Grid size={8}>
           <CustomTextField
@@ -58,6 +155,7 @@ const Step2 = ({ formik }: any) => {
             name="phoneOtp"
             variant="outlined"
             fullWidth
+            disabled={!phoneOtpSent}
             value={formik.values.phoneOtp}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -67,11 +165,17 @@ const Step2 = ({ formik }: any) => {
         </Grid>
 
         <Grid size={4}>
-          <CustomButton text="Verify" variant="contained" fullWidth />
+          <CustomButton
+            text={isVerifyingOtp ? "Verifying..." : "Verify"}
+            variant="contained"
+            fullWidth
+            onClick={handleVerifyPhoneOtp}
+            disabled={isVerifyingOtp || phoneOtpVerified || !phoneOtpSent}
+          />
         </Grid>
       </Grid>
     </Stack>
   );
 };
 
-export default Step2;
+export default Step2;

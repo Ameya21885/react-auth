@@ -1,12 +1,13 @@
 import { Box, Stack } from "@mui/material";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import Typo from "../../../shared/components/Typo";
 import CustomTextField from "../../../shared/components/CustomTextField";
 import CustomButton from "../../../shared/components/CustomButton";
 import Otp_verification from "../../../assets/otp-verification.jpg";
-import { otpVerificationValidation } from "../validations/loginValidation"; // adjust path if needed
+import { otpVerificationValidation } from "../validations/loginValidation";
+import { useVerifyOtpMutation } from "../../../app/services/authApi";
 
 const textStyle = {
   fontSize: {
@@ -19,15 +20,26 @@ const textStyle = {
 
 const OtpVerification = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const identifier = location.state?.identifier || "";
+  const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
 
   const formik = useFormik({
     initialValues: {
       otp: "",
     },
     validationSchema: otpVerificationValidation,
-    onSubmit: (values) => {
-      console.log("OTP Submitted:", values);
-      navigate('/dashboard');
+    onSubmit: async (values) => {
+      try {
+        await verifyOtp({
+          identifier: identifier,
+          otp: values.otp,
+        }).unwrap();
+        alert("Verification successful!");
+        navigate('/dashboard');
+      } catch (err) {
+        console.error("Verification error:", err);
+      }
     },
   });
 
@@ -99,6 +111,14 @@ const OtpVerification = () => {
             }}
           />
 
+          {identifier && (
+            <Typo
+              variant="body2"
+              text={`OTP sent to ${identifier}`}
+              sx={{ textAlign: "center", mb: 1 }}
+            />
+          )}
+
           <Stack spacing={2}>
             <CustomTextField
               label="Enter OTP"
@@ -113,10 +133,11 @@ const OtpVerification = () => {
             />
 
             <CustomButton
-              text="Continue"
+              text={isLoading ? "Verifying..." : "Continue"}
               variant="contained"
               fullWidth
               type="submit"
+              disabled={isLoading}
             />
           </Stack>
 

@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Box, Grid, Stack } from "@mui/material";
 import { useFormik } from "formik";
 import forgot_password from "../../../assets/forgot-password.jpg";
@@ -6,6 +7,11 @@ import CustomTextField from "../../../shared/components/CustomTextField";
 import CustomButton from "../../../shared/components/CustomButton";
 import { forgotPasswordValidation } from "../validations/loginValidation";
 import { useNavigate } from "react-router-dom";
+import {
+  useSendOtpMutation,
+  useVerifyOtpMutation,
+  useResetPasswordMutation,
+} from "../../../app/services/authApi";
 
 const textStyle = {
   fontSize: {
@@ -18,6 +24,14 @@ const textStyle = {
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+  const [sendOtp, { isLoading: isSendingOtp }] = useSendOtpMutation();
+  const [verifyOtp, { isLoading: isVerifyingOtp }] = useVerifyOtpMutation();
+  const [resetPassword, { isLoading: isResettingPassword }] =
+    useResetPasswordMutation();
+
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -26,11 +40,51 @@ const ForgotPassword = () => {
       confirmPassword: "",
     },
     validationSchema: forgotPasswordValidation,
-    onSubmit: (values) => {
-      console.log("Forgot Password values:", values);
-      navigate("/")
+    onSubmit: async (values) => {
+      try {
+        await resetPassword({
+          email: values.email,
+          otp: values.otp,
+          newPassword: values.password,
+        }).unwrap();
+        alert("Password reset successfully!");
+        navigate("/login");
+      } catch (err) {
+        console.error("Reset password error:", err);
+      }
     },
   });
+
+  const handleSendOtp = async () => {
+    if (formik.values.email && !formik.errors.email) {
+      try {
+        await sendOtp({ identifier: formik.values.email }).unwrap();
+        setIsOtpSent(true);
+        alert("OTP sent to your email.");
+      } catch (err) {
+        console.error("Send OTP error:", err);
+      }
+    } else {
+      formik.setFieldTouched("email", true);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (formik.values.otp && !formik.errors.otp) {
+      try {
+        await verifyOtp({
+          identifier: formik.values.email,
+          otp: formik.values.otp,
+        }).unwrap();
+        setIsOtpVerified(true);
+        alert("OTP verified successfully.");
+      } catch (err) {
+        console.error("Verify OTP error:", err);
+      }
+    } else {
+      formik.setFieldTouched("otp", true);
+    }
+  };
 
   return (
     <Box
@@ -101,7 +155,7 @@ const ForgotPassword = () => {
           <form onSubmit={formik.handleSubmit}>
             <Stack spacing={2}>
               <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                <Grid size={12}>
+                <Grid size={8}>
                   <CustomTextField
                     name="email"
                     label="Enter Email id"
@@ -114,6 +168,15 @@ const ForgotPassword = () => {
                     helperText={formik.touched.email ? formik.errors.email : ""}
                   />
                 </Grid>
+                <Grid size={4}>
+                  <CustomButton
+                    text={isSendingOtp ? "Sending..." : "Send OTP"}
+                    variant="outlined"
+                    fullWidth
+                    onClick={handleSendOtp}
+                    disabled={isSendingOtp || isOtpSent}
+                  />
+                </Grid>
                 <Grid size={8}>
                   <CustomTextField
                     name="otp"
@@ -121,6 +184,7 @@ const ForgotPassword = () => {
                     type="text"
                     variant="outlined"
                     fullWidth
+                    disabled={!isOtpSent}
                     value={formik.values.otp}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
@@ -130,9 +194,11 @@ const ForgotPassword = () => {
                 </Grid>
                 <Grid size={4}>
                   <CustomButton
-                    text="verify"
+                    text={isVerifyingOtp ? "Verifying..." : "verify"}
                     variant="contained"
                     fullWidth
+                    onClick={handleVerifyOtp}
+                    disabled={isVerifyingOtp || isOtpVerified || !isOtpSent}
                   />
                 </Grid>
                 <Grid size={12}>
@@ -142,6 +208,7 @@ const ForgotPassword = () => {
                     type="password"
                     variant="outlined"
                     fullWidth
+                    disabled={!isOtpVerified}
                     value={formik.values.password}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
@@ -157,6 +224,7 @@ const ForgotPassword = () => {
                     type="password"
                     variant="outlined"
                     fullWidth
+                    disabled={!isOtpVerified}
                     value={formik.values.confirmPassword}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
@@ -166,10 +234,11 @@ const ForgotPassword = () => {
                 </Grid>
                 <Grid size={12}>
                   <CustomButton
-                    text="Continue"
+                    text={isResettingPassword ? "Processing..." : "Continue"}
                     variant="contained"
                     fullWidth
                     type="submit"
+                    disabled={isResettingPassword || !isOtpVerified}
                   />
                 </Grid>
               </Grid>

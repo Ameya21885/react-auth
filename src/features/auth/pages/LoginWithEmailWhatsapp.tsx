@@ -1,12 +1,11 @@
 import { Stack } from "@mui/material";
 import { useFormik } from "formik";
-
 import CustomTextField from "../../../shared/components/CustomTextField";
 import Typo from "../../../shared/components/Typo";
 import CustomButton from "../../../shared/components/CustomButton";
-
 import { loginWithEmailWhatsappValidation } from "../validations/loginValidation";
 import { useNavigate } from "react-router-dom";
+import { useSendOtpMutation } from "../../../app/services/authApi";
 
 interface LoginWithEmailWhatsappProps {
   setLoginType: React.Dispatch<React.SetStateAction<"otp" | "password">>;
@@ -25,15 +24,21 @@ const LoginWithEmailWhatsapp = ({
   textStyle,
 }: LoginWithEmailWhatsappProps) => {
 
-  const navigate= useNavigate();
+  const navigate = useNavigate();
+  const [sendOtp, { isLoading }] = useSendOtpMutation();
+
   const formik = useFormik({
     initialValues: {
       emailOrWhatsapp: "",
     },
     validationSchema: loginWithEmailWhatsappValidation,
-    onSubmit: (values) => {
-      console.log("Submitted:", values);
-      navigate('/otp-verification')
+    onSubmit: async (values) => {
+      try {
+        await sendOtp({ identifier: values.emailOrWhatsapp }).unwrap();
+        navigate('/otp-verification', { state: { identifier: values.emailOrWhatsapp } });
+      } catch (err) {
+        console.error("Send OTP error:", err);
+      }
     },
   });
 
@@ -68,9 +73,10 @@ const LoginWithEmailWhatsapp = ({
         />
 
         <CustomButton
-          text="Request OTP"
+          text={isLoading ? "Requesting..." : "Request OTP"}
           variant="contained"
           type="submit"
+          disabled={isLoading}
         />
 
         <Typo

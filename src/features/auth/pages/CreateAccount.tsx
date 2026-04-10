@@ -9,10 +9,12 @@ import Step1 from "./Step1";
 import Step2 from "./Step2";
 import Step3 from "./Step3";
 import { createAccountValidationSchemas } from "../validations/loginValidation";
+import { useRegisterMutation } from "../../../app/services/authApi";
 
 const CreateAccount = () => {
   const [activeStep, setActiveStep] = useState(0);
   const navigate = useNavigate();
+  const [register, { isLoading }] = useRegisterMutation();
 
   const formik = useFormik({
     initialValues: {
@@ -26,9 +28,14 @@ const CreateAccount = () => {
       password: "",
       confirmPassword: "",
     },
-    onSubmit: (values) => {
-      console.log("Create Account Values:", values);
-      navigate("/login");
+    onSubmit: async (values) => {
+      try {
+        await register(values).unwrap();
+        alert("Account created successfully!");
+        navigate("/login");
+      } catch (err) {
+        console.error("Registration error:", err);
+      }
     },
     validationSchema: createAccountValidationSchemas[activeStep],
     validateOnBlur: true,
