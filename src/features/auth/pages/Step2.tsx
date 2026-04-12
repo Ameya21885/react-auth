@@ -2,10 +2,17 @@ import { useState } from "react";
 import { Grid, Stack } from "@mui/material";
 import CustomTextField from "../../../shared/components/CustomTextField";
 import CustomButton from "../../../shared/components/CustomButton";
-import { useSendOtpMutation, useVerifyOtpMutation } from "../../../app/services/authApi";
+import {
+  useSendRegistrationEmailOtpMutation,
+  useSendRegistrationPhoneOtpMutation,
+  useVerifyOtpMutation,
+} from "../../../app/services/authApi";
 
 const Step2 = ({ formik }: any) => {
-  const [sendOtp, { isLoading: isSendingOtp }] = useSendOtpMutation();
+  const [sendRegistrationEmailOtp, { isLoading: isSendingEmailOtp }] =
+    useSendRegistrationEmailOtpMutation();
+  const [sendRegistrationPhoneOtp, { isLoading: isSendingPhoneOtp }] =
+    useSendRegistrationPhoneOtpMutation();
   const [verifyOtp, { isLoading: isVerifyingOtp }] = useVerifyOtpMutation();
 
   const [emailOtpSent, setEmailOtpSent] = useState(false);
@@ -16,7 +23,7 @@ const Step2 = ({ formik }: any) => {
   const handleSendEmailOtp = async () => {
     if (formik.values.email && !formik.errors.email) {
       try {
-        await sendOtp({ identifier: formik.values.email }).unwrap();
+        await sendRegistrationEmailOtp({ email: formik.values.email }).unwrap();
         setEmailOtpSent(true);
         alert("OTP sent to your email.");
       } catch (err) {
@@ -47,7 +54,9 @@ const Step2 = ({ formik }: any) => {
   const handleSendPhoneOtp = async () => {
     if (formik.values.phoneNumber && !formik.errors.phoneNumber) {
       try {
-        await sendOtp({ identifier: formik.values.phoneNumber }).unwrap();
+        await sendRegistrationPhoneOtp({
+          phoneNumber: formik.values.phoneNumber,
+        }).unwrap();
         setPhoneOtpSent(true);
         alert("OTP sent to your phone.");
       } catch (err) {
@@ -93,11 +102,11 @@ const Step2 = ({ formik }: any) => {
         </Grid>
         <Grid size={4}>
           <CustomButton
-            text={isSendingOtp ? "Sending..." : "Send OTP"}
+            text={isSendingEmailOtp ? "Sending..." : "Send OTP"}
             variant="outlined"
             fullWidth
             onClick={handleSendEmailOtp}
-            disabled={isSendingOtp || emailOtpSent}
+            disabled={isSendingEmailOtp || emailOtpSent}
           />
         </Grid>
 
@@ -141,11 +150,11 @@ const Step2 = ({ formik }: any) => {
         </Grid>
         <Grid size={4}>
           <CustomButton
-            text={isSendingOtp ? "Sending..." : "Send OTP"}
+            text={isSendingPhoneOtp ? "Sending..." : "Send OTP"}
             variant="outlined"
             fullWidth
             onClick={handleSendPhoneOtp}
-            disabled={isSendingOtp || phoneOtpSent}
+            disabled={isSendingPhoneOtp || phoneOtpSent}
           />
         </Grid>
 

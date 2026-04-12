@@ -38,7 +38,10 @@ const LoginWithEmailPassword = ({
         validationSchema: loginWithEmailPasswordValidation,
         onSubmit: async (values) => {
             try {
-                const response = await login(values).unwrap();
+                const response = await login({
+                    identifier: values.email,
+                    password: values.password,
+                }).unwrap();
                 console.log("Login success:", response);
                 navigate("/dashboard");
             } catch (err) {

@@ -30,7 +30,14 @@ const CreateAccount = () => {
     },
     onSubmit: async (values) => {
       try {
-        await register(values).unwrap();
+        await register({
+          firstName: values.firstName,
+          lastName: values.lastName,
+          userName: values.userName,
+          email: values.email,
+          phoneNumber: values.phoneNumber,
+          password: values.password,
+        }).unwrap();
         alert("Account created successfully!");
         navigate("/login");
       } catch (err) {
